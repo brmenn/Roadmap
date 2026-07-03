@@ -3,7 +3,7 @@
 API sederhana berbasis **Express.js** untuk mengelola task/states menggunakan file `data.json` sebagai database.
 
 
-![Postman]("Screenshot 2026-0703 142743.jpg")
+![Postman](Screenshot 2026-0703 142743.png)
 
 ## Cara Menjalankan
 
