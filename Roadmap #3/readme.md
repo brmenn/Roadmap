@@ -5,15 +5,6 @@ API sederhana berbasis **Express.js** untuk mengelola task/states menggunakan fi
 
 ![Screenshot 2026-0703 142743.png](https://github.com/brmenn/Roadmap/blob/main/Roadmap%20%233/Screenshot%202026-07-03%20142743.png?raw=true)
 
-## Cara Menjalankan
-
-```bash
-npm install
-node index.js
-```
-
-Server akan berjalan di `http://localhost:3000`.
-
 ## Endpoints
 
 | Method   | Endpoint        | Deskripsi               |
