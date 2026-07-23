@@ -1,0 +1,18 @@
+[
+    {
+        "owner_id": 1,
+        "title": "Task 1",
+        "description": "This is the first task.",
+        "status": true,
+        "created_at": "2026-07-21T12:00:00Z",
+        "updated_at": "2026-07-23T06:44:48.267Z"
+    },
+    {
+        "owner_id": 1,
+        "title": "Task 2",
+        "description": "This is the second task.",
+        "status": true,
+        "created_at": "2026-07-21T12:00:00Z",
+        "updated_at": "2026-07-21T12:00:00Z"
+    }
+]
