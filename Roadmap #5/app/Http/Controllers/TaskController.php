@@ -2,44 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Handlers\TaskHandler;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Exceptions\TaskNotFoundException;
+use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     public function __construct(
-        protected TaskHandler $taskHandler
+        protected TaskService $taskService
     ) {}
 
-    // get semua tugas
     public function index(): JsonResponse
     {
-        return $this->taskHandler->handleGetAll();
+        return response()->json($this->taskService->getAllTasks());
     }
 
-    // get tugas by id
     public function show(int $id): JsonResponse
     {
-        return $this->taskHandler->handleGetById($id);
+        try {
+            return response()->json($this->taskService->findTask($id));
+        } catch (TaskNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
-    // buat tugas baru
-    public function store(StoreTaskRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        return $this->taskHandler->handleCreate($request->validated());
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category_id' => 'required|integer|exists:categories,id',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:pending,in_progress,completed',
+            'due_date' => 'nullable|date',
+        ]);
+
+        try {
+            $task = $this->taskService->createTask($validated);
+            return response()->json($task, 201);
+        } catch (\RuntimeException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 
-    // update tugas
-    public function update(UpdateTaskRequest $request, int $id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
-        return $this->taskHandler->handleUpdate($id, $request->validated());
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'category_id' => 'sometimes|required|integer|exists:categories,id',
+            'priority' => 'sometimes|required|in:low,medium,high',
+            'status' => 'sometimes|required|in:pending,in_progress,completed',
+            'due_date' => 'nullable|date',
+        ]);
+
+        try {
+            return response()->json($this->taskService->updateTask($id, $validated));
+        } catch (TaskNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
-    // hapus tugas
     public function destroy(int $id): JsonResponse
     {
-        return $this->taskHandler->handleDelete($id);
+        try {
+            $this->taskService->deleteTask($id);
+            return response()->json(['message' => 'Task deleted successfully']);
+        } catch (TaskNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 }
